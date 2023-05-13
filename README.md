@@ -17,6 +17,12 @@ Classify: Dog, Cat, automobile,	airplane
 Train: 5,000 (per class)
 Test: 1,000 (per class)
 
+#### New label for project: 
+Cat: 0  
+Dog: 1\
+Airplane: 2\
+Automobile: 3
+
 ## May 10 - May 17
 ### EDA (finish) Jiusi Li
 ### Classify (finish) Susie 
