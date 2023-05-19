@@ -38,17 +38,22 @@ class createAugment(keras.utils.Sequence):
     X_batch = np.empty((self.batch_size, self.dim[0], self.dim[1], self.n_channels))
     y_batch = np.empty((self.batch_size, self.dim[0], self.dim[1], self.n_channels))
 
-    x = y = np.random.randint(0, 31, 1)[0]
-    w = h = np.random.randint(4, 10, 1)[0]
-
     for i, idx in enumerate(idxs):
         tmp_image = self.X[idx].copy()
 
+        # random width and height between 4 and image dimension - 1
+        w = np.random.randint(4, self.dim[0])
+        h = np.random.randint(4, self.dim[1])
+
+        # random x and y such that the mask fits within the image
+        x = np.random.randint(0, self.dim[0] - w)
+        y = np.random.randint(0, self.dim[1] - h)
+
         mask = np.full(tmp_image.shape, 255, np.uint8)
-        mask[y:y+h,x:x+w] = 0
+        mask[y:y+h, x:x+w] = 0
         res = cv2.bitwise_and(tmp_image, mask)
 
         X_batch[i,] = res/255
         y_batch[i] = self.y[idx]/255
-        
+
     return X_batch, y_batch
