@@ -11,6 +11,7 @@ from keras.utils import CustomObjectScope
 from keras.models import load_model
 from PIL import Image, ImageDraw
 import random
+import json
 
 (x_train, y_train), (x_test, y_test) = keras.datasets.cifar10.load_data()
 
@@ -68,12 +69,34 @@ model = unet_improved()
 early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=[dice_coef])
 
-model.fit(train_masked, validation_data=test_masked, 
-          epochs=200, 
+history = model.fit(train_masked, validation_data=test_masked, 
+          epochs=50, 
           steps_per_epoch=len(train_masked), 
           validation_steps=len(test_masked),
           use_multiprocessing=True, callbacks=[early_stopping])
 
 
+
+# Save it under the form of a json file
+history_dict = history.history
+json.dump(history_dict, open('history_improved_unet.json', 'w'))
+
+plt.figure(figsize=(12, 6))
+plt.plot(history.history['dice_coef'])
+plt.plot(history.history['val_dice_coef'])
+plt.title('Model Dice Coefficient')
+plt.ylabel('Dice Coefficient')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Test'], loc='upper left')
+plt.savefig('improved_unet_dice_coef.png')
+
+plt.figure(figsize=(12, 6))
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('Model loss')
+plt.ylabel('Loss')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Test'], loc='upper right')
+plt.savefig('improved_unet_model_loss.png')
 
 model.save('improved_Unet.h5')

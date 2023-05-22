@@ -17,6 +17,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization
 from keras.layers import Conv2D, Conv2DTranspose, BatchNormalization, Activation
 from keras.applications.vgg19 import VGG19
+import json
 
 (x_train, y_train), (x_test, y_test) = keras.datasets.cifar10.load_data()
 
@@ -75,6 +76,10 @@ history = model.fit(train_masked, validation_data=test_masked,
           validation_steps=len(test_masked),
           use_multiprocessing=True)
 
+# Save it under the form of a json file
+history_dict = history.history
+json.dump(history_dict, open('history.json', 'w'))
+
 plt.figure(figsize=(12, 6))
 plt.plot(history.history['loss'])
 plt.plot(history.history['val_loss'])
@@ -84,4 +89,15 @@ plt.xlabel('Epoch')
 plt.legend(['Train', 'Test'], loc='upper right')
 plt.savefig('unet_vgg_model_loss.png')
 
+plt.figure(figsize=(12, 6))
+plt.plot(history.history['dice_coef'])
+plt.plot(history.history['val_dice_coef'])
+plt.title('Model Dice Coefficient')
+plt.ylabel('Dice Coefficient')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Test'], loc='upper left')
+plt.savefig('unet_vgg_model_dice_coef.png')
+
 model.save('unet_vgg_model.h5')
+
+
